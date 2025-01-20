@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myshuttle-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myshuttle
+  template:
+    metadata:
+      labels:
+        app: myshuttle
+    spec:
+      containers:
+      - name: myshuttle-container
+        image: 590183892288.dkr.ecr.us-east-1.amazonaws.com/micro-service-application:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MYSQL_HOST
+          value: "db"
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_USER
+          value: "user"
+        - name: MYSQL_PASSWORD
+          value: "password"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myshuttle-service
+spec:
+  selector:
+    app: myshuttle
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
